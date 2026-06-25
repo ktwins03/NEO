@@ -2,37 +2,82 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>코페르니쿠스 마린 레이어 지도</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>코페르니쿠스 마린 데이터 플랫폼</title>
     <style>
-        body { margin: 0; padding: 0; }
-        #map { width: 100vw; height: 100vh; }
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #0f172a; /* 어두운 네이비 배경 */
+            color: #f8fafc;
+            margin: 0;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #38bdf8; /* 밝은 하늘색 포인트 */
+        }
+        p {
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+        /* 지도 이미지 감싸는 박스 스타일 */
+        .map-link-container {
+            display: inline-block;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        /* 마우스를 올렸을 때 살짝 커지는 효과 */
+        .map-link-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(56, 189, 248, 0.3);
+        }
+        .map-screenshot {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #334155;
+        }
+        /* 이미지 위에 안내 문구 띄우기 */
+        .hover-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(15, 23, 42, 0.9));
+            padding: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #38bdf8;
+        }
     </style>
 </head>
 <body>
 
-<div id="map"></div>
+<div class="container">
+    <h1>Copernicus Marine Expert Viewer</h1>
+    <p>아래 지도를 클릭하면 실시간 코페르니쿠스 해양 데이터 뷰어(새 창)로 연결됩니다.</p>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-    // 1. 지도 생성
-    const map = L.map('map').setView([39.06, 130.16], 6);
-
-    // 2. 기본 배경 지도 (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    // 3. 코페르니쿠스 마린 WMS 레이어 추가
-    // 주의: 아래 URL과 layer 명은 사용하시려는 특정 데이터셋에 맞게 수정해야 합니다.
-    const copernicusWMS = L.tileLayer.wms("https://my.cmems-du.eu/motu-web/wms", {
-        layers: 'cmems_mod_glo_phy_anfc_0.083deg_P1D-m_thetao', // 예시: 데이터셋 ID
-        format: 'image/png',
-        transparent: true,
-        version: '1.3.0',
-        attribution: "© Copernicus Marine Service"
-    }).addTo(map);
-</script>
+    <a href="https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=1779040800000&z=-200&center=130.16038204953054%2C39.0627401581225&zoom=14.583824767779062&layers=H4sIAMe1PGoAA6WQT0.CQBDFv8ueK2y3FEpvFRVJUIj1QoyZrNuhNNl2yHYLVsJ3d4EoBwkXD3N58_e9_b3tGNkVmhGRyWoW7.Yeo7VUhW1ZzDuRx7Rs0UwyFrPxdHabTCF5TqaLdJI_zF7uR0n6CvPHBXDuAxe9riqxrKGkDHJNsF61N_66lQSyWirgHR4FGeYw9_9uShBug.e7pwnmsa9JleEniyPuseLgCJo7WVOeKqmRxUupa3RCka.s2FCzPub63VekyZTypBpZVB_0dfJG6gafiurwUBgI7od94fddBcPhT1c6W9Hxe1EQ8oEbCAaCD.bedToi.D8e1ZhrbGqUsJUWDWxQ09H4zGl45iQucaptq3EujS2URhffmuYvvQsO_.dvzBHUqBcCAAA-&basemap=dark" 
+       target="_blank" 
+       class="map-link-container">
+        
+        <img src="map-screenshot.jpg" alt="Copernicus Map Screenshot" class="map-screenshot">
+        
+        <div class="hover-overlay">
+            🔍 클릭하여 인터랙티브 지도로 보기
+        </div>
+    </a>
+</div>
 
 </body>
 </html>
