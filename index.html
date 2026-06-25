@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Malgun Gothic', sans-serif;
-            background-color: #0f172a; /* 어두운 네이비 배경 */
+            background-color: #0f172a;
             color: #f8fafc;
             margin: 0;
             padding: 40px 20px;
@@ -20,23 +20,24 @@
         h1 {
             font-size: 2rem;
             margin-bottom: 10px;
-            color: #38bdf8; /* 밝은 하늘색 포인트 */
+            color: #38bdf8;
         }
         p {
             color: #94a3b8;
             margin-bottom: 30px;
         }
-        
-        /* 제어 패널 스타일 */
         .control-panel {
             padding: 25px;
-            background: #1e293b; /* body보다 약간 밝은 네이비 */
+            background: #1e293b;
             border: 1px solid #334155;
             border-radius: 12px;
             margin-bottom: 30px;
             display: inline-block;
             text-align: left;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-radius;
+            max-width: 500px;
         }
         .form-group {
             margin-bottom: 15px;
@@ -45,7 +46,7 @@
             font-weight: bold;
             color: #cbd5e1;
             display: inline-block;
-            width: 180px;
+            width: 140px;
         }
         input {
             padding: 8px 12px;
@@ -59,8 +60,6 @@
             outline: none;
             border-color: #38bdf8;
         }
-        
-        /* 반영 버튼 스타일 */
         .btn-submit {
             display: block;
             width: 100%;
@@ -78,46 +77,13 @@
         .btn-submit:hover {
             background-color: #7dd3fc;
         }
-
-        /* 기존 이미지 박스 스타일 */
-        .map-link-container {
-            display: inline-block;
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        .map-link-container:hover {
-            transform: scale(1.02);
-            box-shadow: 0 15px 35px rgba(56, 189, 248, 0.3);
-        }
-        .map-screenshot {
-            display: block;
-            max-width: 100%;
-            height: auto;
-            border: 2px solid #334155;
-        }
-        .hover-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(15, 23, 42, 0.9));
-            padding: 20px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #38bdf8;
-        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Copernicus Marine Expert Viewer</h1>
-    <p>수심과 날짜를 입력한 후 버튼을 누르거나, 스크린샷 지도를 클릭하면 해당 뷰어로 연결됩니다.</p>
+    <p>수심과 날짜를 입력한 후 버튼을 누르면 해당 뷰어로 연결됩니다.</p>
 
     <div class="control-panel">
         <div class="form-group">
@@ -126,38 +92,49 @@
         </div>
         
         <div class="form-group">
-            <label for="dateInput">날짜 입력 (일자):</label>
+            <label for="dateInput">날짜 입력:</label>
             <input type="date" id="dateInput" value="2026-05-18">
+        </div>
+
+        <div class="form-group" style="margin-top: 20px; border-top: 1px solid #334155; padding-top: 15px;">
+            <label for="layerInput" style="width: 100%; margin-bottom: 5px; color: #94a3b8; font-size: 0.85rem;">
+                💡 레이어가 안 뜰 때만: CMEMS 주소의 'layers=' 뒷부분 붙여넣기
+            </label>
+            <input type="text" id="layerInput" value="H4sIAMe1PGoAA6WQT0.CQBDFv8ueK2y3FEpvFRVJUIj1QoyZrNuhNNl2yHYLVsJ3d4EoBwkXD3N58_e9_b3tGNkVmhGRyWoW7.Yeo7VUhW1ZzDuRx7Rs0UwyFrPxdHabTCF5TqaLdJI_zF7uR0n6CvPHBXDuAxe9riqxrKGkDHJNsF61N_66lQSyWirgHR4FGeYw9_9uShBug.e7pwnmsa9JleEniyPuseLgCJo7WVOeKqmRxUupa3RCka.s2FCzPub63VekyZTypBpZVB_0dfJG6gafiurwUBgI7od94fddBcPhT1c6W9Hxe1EQ8oEbCAaCD.bedToi.D8e1ZhrbGqUsJUWDWxQ09H4zGl45iQucaptq3EujS2URhffmuYvvQsO_.dvzBHUqBcCAAA-" style="width: 95%; font-size: 0.8rem; color: #64748b;">
         </div>
         
         <button class="btn-submit" onclick="openViewer()">입력한 조건으로 뷰어 열기 (새 창)</button>
-    </div>
-
-    <br>
-
-    <div class="map-link-container" onclick="openViewer()">
-        <img src="screen.png" alt="Copernicus Map Screenshot" class="map-screenshot">
-        <div class="hover-overlay">
-            🔍 클릭하여 입력한 조건의 지도로 이동하기
-        </div>
     </div>
 </div>
 
 <script>
 function openViewer() {
-    // 1. 사용자가 타이핑한 값 가져오기
-    const depth = document.getElementById('depthInput').value;
-    const dateVal = document.getElementById('dateInput').value;
+    const depthEl = document.getElementById('depthInput');
+    const dateEl = document.getElementById('dateInput');
+    const layerEl = document.getElementById('layerInput');
     
-    // 2. 날짜 문자열을 CMEMS가 인식하는 Unix 타임스탬프(밀리초)로 변환
+    let depth = depthEl.value.trim();
+    if (depth === "") depth = "0";
+    
+    const dateVal = dateEl.value;
+    if (!dateVal) {
+        alert("날짜를 올바르게 입력해주세요.");
+        return;
+    }
+    
+    // 시간대 밀림 방지 - 기본 UTC 표준시 변환 지원식으로 변경
     const timestamp = new Date(dateVal).getTime();
     
-    // 3. 베이스가 되는 MyOcean Pro URL 레이어 정보
-    const baseLayers = "H4sIAM8ePWoAA6WQT0.CQBDFv8ueK2y3FEpvFRVJUIj1QoyZrNuhNNl2yHYLVsJ3d4EoBwkXD3N58_e9_b3tGNkVmhGRyWoW7.Yeo7VUhW1ZzDuRx7Rs0UwyFrPxdHabTCF5TqaLdJI_zF7uR0n6CvPHBXDuAxe9riqxrKGkDHJNsF61N_66lQSyWirgHR4FGeYw9_9uShBug.e7pwnmsa9JleEniyPuseLgCJo7WVOeKqmRxUupa3RCka.s2FCzPulse5VekyZTypBpZVB_0dfJG6gafiurwUBgI7od94fddBcPhT1c6W9Hxe1EQ8oEbCAaCD.bedToi.D8e1ZhrbGqUsJUWDWxQ09H4zGl45iQucaptq3EujS2URhffmuYvvQsO_.dvzBHUqBcCAAA-";
+    if (isNaN(timestamp)) {
+        alert("잘못된 날짜 형식입니다.");
+        return;
+    }
+    
+    // 사용자가 입력창에 넣어둔 최신 레이어 문자열을 가져옴
+    const baseLayers = layerEl.value.trim();
     
     const newUrl = `https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=${timestamp}&z=${depth}&center=130.16038204953057%2C39.0627401581225&zoom=14.583824767779062&layers=${baseLayers}&basemap=dark`;
     
-    // 4. iframe 대신 window.open을 사용하여 보안 제한 없이 깔끔하게 새 창으로 표시
     window.open(newUrl, '_blank');
 }
 </script>
