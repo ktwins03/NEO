@@ -36,7 +36,7 @@
             text-align: left;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             width: 100%;
-            box-sizing: border-radius;
+            box-sizing: border-box; /* 오타 수정: 블록 크기 계산 정상화 */
             max-width: 500px;
         }
         .form-group {
@@ -77,13 +77,48 @@
         .btn-submit:hover {
             background-color: #7dd3fc;
         }
+
+        /* [추가 및 복구] 지도 이미지 스타일 선언부 */
+        .map-link-container {
+            display: inline-block;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            margin-top: 20px;
+            max-width: 100%;
+        }
+        .map-link-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(56, 189, 248, 0.3);
+        }
+        .map-screenshot {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #334155;
+            border-radius: 12px;
+        }
+        .hover-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(15, 23, 42, 0.9));
+            padding: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #38bdf8;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Copernicus Marine Expert Viewer</h1>
-    <p>수심과 날짜를 입력한 후 버튼을 누르면 해당 뷰어로 연결됩니다.</p>
+    <p>수심과 날짜를 입력한 후 버튼을 누르거나, 아래 지도를 클릭하면 해당 뷰어로 연결됩니다.</p>
 
     <div class="control-panel">
         <div class="form-group">
@@ -105,6 +140,15 @@
         
         <button class="btn-submit" onclick="openViewer()">입력한 조건으로 뷰어 열기 (새 창)</button>
     </div>
+
+    <br>
+
+    <div class="map-link-container" onclick="openViewer()">
+        <img src="screen.png" alt="Copernicus Map Screenshot" class="map-screenshot">
+        <div class="hover-overlay">
+            🔍 클릭하여 입력한 조건의 지도로 이동하기
+        </div>
+    </div>
 </div>
 
 <script>
@@ -122,15 +166,15 @@ function openViewer() {
         return;
     }
     
-    // 시간대 밀림 방지 - 기본 UTC 표준시 변환 지원식으로 변경
-    const timestamp = new Date(dateVal).getTime();
+    // [보완] 크롬 및 타 브라우저 시차 오류 원천 차단 (낮 12시 기준 타임스탬프 발행)
+    const safeDateStr = `${dateVal}T12:00:00`;
+    const timestamp = new Date(safeDateStr).getTime();
     
     if (isNaN(timestamp)) {
         alert("잘못된 날짜 형식입니다.");
         return;
     }
     
-    // 사용자가 입력창에 넣어둔 최신 레이어 문자열을 가져옴
     const baseLayers = layerEl.value.trim();
     
     const newUrl = `https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=${timestamp}&z=${depth}&center=130.16038204953057%2C39.0627401581225&zoom=14.583824767779062&layers=${baseLayers}&basemap=dark`;
