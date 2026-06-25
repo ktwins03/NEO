@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>코페르니쿠스 마린 데이터 플랫폼</title>
+    <title>코페르니쿠스 마린 데이터 제어 패널</title>
     <style>
         body {
             font-family: 'Malgun Gothic', sans-serif;
@@ -26,7 +26,60 @@
             color: #94a3b8;
             margin-bottom: 30px;
         }
-        /* 지도 이미지 감싸는 박스 스타일 */
+        
+        /* 제어 패널 스타일 */
+        .control-panel {
+            padding: 25px;
+            background: #1e293b; /* body보다 약간 밝은 네이비 */
+            border: 1px solid #334155;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: inline-block;
+            text-align: left;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            color: #cbd5e1;
+            display: inline-block;
+            width: 180px;
+        }
+        input {
+            padding: 8px 12px;
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #f8fafc;
+            font-size: 1rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: #38bdf8;
+        }
+        
+        /* 반영 버튼 스타일 */
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #38bdf8;
+            color: #0f172a;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 20px;
+        }
+        .btn-submit:hover {
+            background-color: #7dd3fc;
+        }
+
+        /* 기존 이미지 박스 스타일 */
         .map-link-container {
             display: inline-block;
             position: relative;
@@ -35,8 +88,8 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
+            margin-top: 20px;
         }
-        /* 마우스를 올렸을 때 살짝 커지는 효과 */
         .map-link-container:hover {
             transform: scale(1.02);
             box-shadow: 0 15px 35px rgba(56, 189, 248, 0.3);
@@ -47,7 +100,6 @@
             height: auto;
             border: 2px solid #334155;
         }
-        /* 이미지 위에 안내 문구 띄우기 */
         .hover-overlay {
             position: absolute;
             bottom: 0;
@@ -65,19 +117,50 @@
 
 <div class="container">
     <h1>Copernicus Marine Expert Viewer</h1>
-    <p>아래 지도를 클릭하면 실시간 코페르니쿠스 해양 데이터 뷰어(새 창)로 연결됩니다.</p>
+    <p>수심과 날짜를 입력한 후 버튼을 누르거나, 스크린샷 지도를 클릭하면 해당 뷰어로 연결됩니다.</p>
 
-    <a href="https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=1779040800000&z=-200&center=130.16038204953054%2C39.0627401581225&zoom=14.583824767779062&layers=H4sIAMe1PGoAA6WQT0.CQBDFv8ueK2y3FEpvFRVJUIj1QoyZrNuhNNl2yHYLVsJ3d4EoBwkXD3N58_e9_b3tGNkVmhGRyWoW7.Yeo7VUhW1ZzDuRx7Rs0UwyFrPxdHabTCF5TqaLdJI_zF7uR0n6CvPHBXDuAxe9riqxrKGkDHJNsF61N_66lQSyWirgHR4FGeYw9_9uShBug.e7pwnmsa9JleEniyPuseLgCJo7WVOeKqmRxUupa3RCka.s2FCzPub63VekyZTypBpZVB_0dfJG6gafiurwUBgI7od94fddBcPhT1c6W9Hxe1EQ8oEbCAaCD.bedToi.D8e1ZhrbGqUsJUWDWxQ09H4zGl45iQucaptq3EujS2URhffmuYvvQsO_.dvzBHUqBcCAAA-&basemap=dark" 
-       target="_blank" 
-       class="map-link-container">
-        
-        <img src="screen.png" alt="Copernicus Map Screenshot" class="map-screenshot">
-        
-        <div class="hover-overlay">
-            🔍 클릭하여 인터랙티브 지도로 보기
+    <div class="control-panel">
+        <div class="form-group">
+            <label for="depthInput">수심 입력 (m):</label>
+            <input type="number" id="depthInput" value="-200" style="width: 100px;">
         </div>
-    </a>
+        
+        <div class="form-group">
+            <label for="dateInput">날짜 입력 (일자):</label>
+            <input type="date" id="dateInput" value="2026-05-18">
+        </div>
+        
+        <button class="btn-submit" onclick="openViewer()">입력한 조건으로 뷰어 열기 (새 창)</button>
+    </div>
+
+    <br>
+
+    <div class="map-link-container" onclick="openViewer()">
+        <img src="screen.png" alt="Copernicus Map Screenshot" class="map-screenshot">
+        <div class="hover-overlay">
+            🔍 클릭하여 입력한 조건의 지도로 이동하기
+        </div>
+    </div>
 </div>
+
+<script>
+function openViewer() {
+    // 1. 사용자가 타이핑한 값 가져오기
+    const depth = document.getElementById('depthInput').value;
+    const dateVal = document.getElementById('dateInput').value;
+    
+    // 2. 날짜 문자열을 CMEMS가 인식하는 Unix 타임스탬프(밀리초)로 변환
+    const timestamp = new Date(dateVal).getTime();
+    
+    // 3. 베이스가 되는 MyOcean Pro URL 레이어 정보
+    const baseLayers = "H4sIAM8ePWoAA6WQT0.CQBDFv8ueK2y3FEpvFRVJUIj1QoyZrNuhNNl2yHYLVsJ3d4EoBwkXD3N58_e9_b3tGNkVmhGRyWoW7.Yeo7VUhW1ZzDuRx7Rs0UwyFrPxdHabTCF5TqaLdJI_zF7uR0n6CvPHBXDuAxe9riqxrKGkDHJNsF61N_66lQSyWirgHR4FGeYw9_9uShBug.e7pwnmsa9JleEniyPuseLgCJo7WVOeKqmRxUupa3RCka.s2FCzPulse5VekyZTypBpZVB_0dfJG6gafiurwUBgI7od94fddBcPhT1c6W9Hxe1EQ8oEbCAaCD.bedToi.D8e1ZhrbGqUsJUWDWxQ09H4zGl45iQucaptq3EujS2URhffmuYvvQsO_.dvzBHUqBcCAAA-";
+    
+    const newUrl = `https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=${timestamp}&z=${depth}&center=130.16038204953057%2C39.0627401581225&zoom=14.583824767779062&layers=${baseLayers}&basemap=dark`;
+    
+    // 4. iframe 대신 window.open을 사용하여 보안 제한 없이 깔끔하게 새 창으로 표시
+    window.open(newUrl, '_blank');
+}
+</script>
 
 </body>
 </html>
