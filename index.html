@@ -1,42 +1,93 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>코페르니쿠스 마린 데이터 제어 패널</title>
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; background-color: #0f172a; color: #f8fafc; text-align: center; padding: 50px; }
-        .map-container { display: inline-block; cursor: pointer; border: 3px solid #334155; border-radius: 15px; overflow: hidden; }
-        .map-container:hover { border-color: #38bdf8; }
+        body { font-family: 'Malgun Gothic', sans-serif; background-color: #0f172a; color: #f8fafc; margin: 0; padding: 40px 20px; text-align: center; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { font-size: 2rem; margin-bottom: 10px; color: #38bdf8; }
+        p { color: #94a3b8; margin-bottom: 30px; }
+        .control-panel { padding: 25px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; margin-bottom: 30px; display: inline-block; text-align: left; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); width: 100%; box-sizing: border-box; max-width: 500px; }
+        .form-group { margin-bottom: 15px; }
+        label { font-weight: bold; color: #cbd5e1; display: inline-block; width: 140px; }
+        input { padding: 8px 12px; background-color: #0f172a; border: 1px solid #475569; border-radius: 6px; color: #f8fafc; font-size: 1rem; }
+        input:focus { outline: none; border-color: #38bdf8; }
+        .section-title { margin-top: 50px; margin-bottom: 15px; font-size: 1.25rem; color: #cbd5e1; font-weight: bold; }
+        .map-link-container { display: inline-block; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); transition: transform 0.3s ease; cursor: pointer; margin-bottom: 20px; max-width: 100%; }
+        .map-link-container:hover { transform: scale(1.02); }
+        .map-screenshot { display: block; max-width: 100%; height: auto; border: 2px solid #334155; border-radius: 12px; }
+        .hover-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(15, 23, 42, 0.9)); padding: 20px; font-size: 1.1rem; font-weight: bold; color: #38bdf8; }
     </style>
 </head>
 <body>
 
-    <h1>데이터 제어 패널</h1>
-    <div style="margin-bottom: 30px;">
-        수심(m): <input type="number" id="depth" value="-40" style="width:60px;">
-        날짜: <input type="date" id="date" value="2025-11-15">
+<div class="container">
+    <h1>Copernicus Marine Expert Viewer</h1>
+    <p>아래에서 수심과 날짜를 지정한 후, 원하는 해역의 지도를 클릭하면 해당 조건으로 뷰어가 열립니다.</p>
+
+    <div class="control-panel">
+        <div class="form-group">
+            <label for="depthInput">수심 입력 (m):</label>
+            <input type="number" id="depthInput" value="-40" style="width: 100px;">
+        </div>
+        <div class="form-group">
+            <label for="dateInput">날짜 입력:</label>
+            <input type="date" id="dateInput" value="2025-11-15">
+        </div>
     </div>
 
-    <!-- 서/남해 영역 (6732.jpg 클릭) -->
-    <div class="map-container" onclick="openCorrectViewer()">
-        <img src="6732.jpg" alt="West/South Sea" width="600">
-        <div style="background:#1e293b; padding:10px;">클릭하여 서·남해 데이터 보기</div>
+    <div class="section-title">📍 동해 및 주변 해역의 해수 특성 관찰</div>
+    <div class="map-link-container" onclick="openViewer('eastSea')">
+        <img src="screen.png" alt="East Sea Map" class="map-screenshot">
+        <div class="hover-overlay">🔍 클릭하여 동해 지도로 이동하기</div>
     </div>
+
+    <div class="section-title" style="color: #38bdf8;">📍 서·남해 일대의 수온과 해류 구조 관찰</div>
+    <div class="map-link-container" onclick="openViewer('westSouthSea')">
+        <img src="screen11.jpg" alt="West/South Sea Map" class="map-screenshot">
+        <div class="hover-overlay">🔍 클릭하여 서·남해 지도로 이동하기</div>
+    </div>
+</div>
 
 <script>
-function openCorrectViewer() {
-    const depth = document.getElementById('depth').value;
-    const dateVal = document.getElementById('date').value;
+function openViewer(region) {
+    const depth = document.getElementById('depthInput').value.trim();
+    const dateVal = document.getElementById('dateInput').value;
     const timestamp = new Date(`${dateVal}T12:00:00`).getTime();
 
-    // 핵심: 레이어 코드를 직접 넣지 않고 서버가 지원하는 뷰어 주소 체계 사용
-    // layers 파라미터를 강제로 빼버리면 뷰어가 기본 상태로 로드됩니다.
-    const baseUrl = "https://data.marine.copernicus.eu/viewer/expert";
-    const url = `${baseUrl}?view=viewer&crs=epsg:4326&t=${timestamp}&z=${depth}&center=122.78,33.85&zoom=13&basemap=bathymetry`;
+    if (isNaN(timestamp)) { alert("날짜 형식이 올바르지 않습니다."); return; }
+
+    let url;
+
+    if (region === 'eastSea') {
+        url = new URL("https://data.marine.copernicus.eu/viewer/expert");
+        url.searchParams.set("view", "viewer");
+        url.searchParams.set("crs", "epsg:4326");
+        url.searchParams.set("t", timestamp);
+        url.searchParams.set("z", depth);
+        url.searchParams.set("center", "130.16038204953057,39.0627401581225");
+        url.searchParams.set("zoom", "14.583824767779062");
+        url.searchParams.set("layers", "H4sIAMe1PGoAA6WQT0.CQBDFv8ueK2y3FEpvFRVJUIj1QoyZrNuhNNl2yHYLVsJ3d4EoBwkXD3N58_e9_b3tGNkVmhGRyWoW7.Yeo7VUhW1ZzDuRx7Rs0UwyFrPxdHabTCF5TqaLdJI_zF7uR0n6CvPHBXDuAxe9riqxrKGkDHJNsF61N_66lQSyWirgHR4FGeYw9_9uShBug.e7pwnmsa9JleEniyPuseLgCJo7WVOeKqmRxUupa3RCka.s2FCzPub63VekyZTypBpZVB_0dfJG6gafiurwUBgI7od94fddBcPhT1c6W9Hxe1EQ8oEbCAaCD.bedToi.D8e1ZhrbGqUsJUWDWxQ09H4zGl45iQucaptq3EujS2URhffmuYvvQsO_.dvzBHUqBcCAAA-");
+        url.searchParams.set("basemap", "dark");
+    } else {
+        // [서·남해] 요청하신 정확한 URL 파라미터 적용
+        url = new URL("https://data.marine.copernicus.eu/viewer/expert");
+        url.searchParams.set("view", "viewer");
+        url.searchParams.set("crs", "epsg:4326");
+        url.searchParams.set("t", timestamp); // 입력한 날짜
+        url.searchParams.set("z", depth);     // 입력한 수심
+        url.searchParams.set("center", "122.78211050504403,33.858696115669225");
+        url.searchParams.set("zoom", "13.75413737458402");
+        url.searchParams.set("layers", "H4sIAHbdP2oAA6WSX0.CMBTFv0ufx_i.sXZviAokKMT5Qoxp6lZgSUdJN0AkfHe7ER2JkxdeT3vPufd379sRmHKl7MAYmxYgOp48YDYyycoDiKDPPKDlQdlxCiIwnEzv_hPRf_5P5vE4fpy_PAz68auYjeYCQiQgpt0kV3khcpOKpTZiszp0nHspjZDrRSKgDxlJ1VLM0H0nF9hVwF73.AN44Gu8TtUniBj0QFYlCg2drM0yTqRWIFpIXSgnZMtVObRmu6n7_q1PjDY2l2fVymz9YfZO3km9VU.ZGkTIhxwFIUSEcYJwSOnPq3SxGPnEPRPMeMgpx.jkXaeDg9vxJFt7jU2hpNjLUlmxU9rUwQ0n3nDCbZyK8qDVTNoyS7Ry7Zd2_5dea0JdGRtduddmrShunb24ehbF5UmEzaiobdRmx5j7mGEeIBJQziANL1dMqN8jLCA0oAHjrNr.P0eTFaMsTZUzrKid3r8BjNPYySkDAAA-");
+        url.searchParams.set("basemap", "bathymetry");
+        url.searchParams.set("objv2", "H4sIAHbdP2oAA1VQ3WqDMBR_l1xtYCWJ8Se9G4yNQqFluyxSsvZoA5q4GGUyfPed6BhrbkLO93ty_ib6SrbkbCmJSAXKDw56ssW5nzpA5GWdIVqDbcG7iWz.wKPVxiN0sdZdtVF_0TIu4jQRGc2iRMS0yBOalHNEOmc7cF4H0l2uUW1wOz_ReS4xyKnutnDONQtXq7q9msDtFkkTJAvnvYPLMhsfbo847IePHvyzbt.g8zCCc.q6ZkEDo.LamvBwytQYd9owSqMNjYUUlAspmSwkS9JcYIVWfe3MpRl6PSLVuwFmXGD1P6oa9mBqv3b85805kta9sHhQgGmUq_H1d6NghP_gzaGq0CmUSBmPZTgso7RIeREl6ztnLJNFnguelXP5A5vXD1upAQAA");
+    }
     
-    window.open(url, '_blank');
+    window.open(url.toString(), '_blank');
 }
 </script>
+
 </body>
 </html>
