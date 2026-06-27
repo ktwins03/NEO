@@ -132,9 +132,10 @@
         </div>
     </div>
 
-    <!-- 2지역: 서·남해 일대 관찰 (요청사항 1: screen11.jpg 적용) -->
+    <!-- 2지역: 서·남해 일대 관찰 -->
     <div class="section-title" style="color: #38bdf8;">📍 다음은 서.남해 일대의 수온과 해류 구조를 관찰해봅시다.</div>
     <div class="map-link-container" onclick="openViewer('westSouthSea')">
+        <!-- screen11.jpg 적용 완료 -->
         <img src="screen11.jpg" alt="West/South Sea Map" class="map-screenshot">
         <div class="hover-overlay">
             🔍 클릭하여 지정한 조건의 서·남해 지도로 이동하기
@@ -164,21 +165,29 @@ function openViewer(region) {
         return;
     }
     
-    let newUrl = "";
+    // URL 조립 오류를 원천 차단하는 가장 안전한 URL 객체 방식 사용
+    const url = new URL("https://data.marine.copernicus.eu/viewer/expert");
+    url.searchParams.set("view", "viewer");
+    url.searchParams.set("crs", "epsg:4326");
+    url.searchParams.set("t", timestamp);
+    url.searchParams.set("z", depth);
 
-    // [요청사항 2 조치]: 문자열 내 강제 줄바꿈을 없애고 한 줄로 완벽히 선언하여 복구
     if (region === 'eastSea') {
-        const baseLayers = "H4sIAMe1PGoAA6WQT0.CQBDFv8ueK2y3FEpvFRVJUIj1QoyZrNuhNNl2yHYLVsJ3d4EoBwkXD3N58_e9_b3tGNkVmhGRyWoW7.Yeo7VUhW1ZzDuRx7Rs0UwyFrPxdHabTCF5TqaLdJI_zF7uR0n6CvPHBXDuAxe9riqxrKGkDHJNsF61N_66lQSyWirgHR4FGeYw9_9uShBug.e7pwnmsa9JleEniyPuseLgCJo7WVOeKqmRxUupa3RCka.s2FCzPub63VekyZTypBpZVB_0dfJG6gafiurwUBgI7od94fddBcPhT1c6W9Hxe1EQ8oEbCAaCD.bedToi.D8e1ZhrbGqUsJUWDWxQ09H4zGl45iQucaptq3EujS2URhffmuYvvQsO_.dvzBHUqBcCAAA-";
-        newUrl = "https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=" + timestamp + "&z=" + depth + "&center=130.16038204953057%2C39.0627401581225&zoom=14.583824767779062&layers=" + baseLayers + "&basemap=dark";
+        url.searchParams.set("center", "130.16038204953057,39.0627401581225");
+        url.searchParams.set("zoom", "14.583824767779062");
+        url.searchParams.set("layers", "H4sIAMe1PGoAA6WQT0.CQBDFv8ueK2y3FEpvFRVJUIj1QoyZrNuhNNl2yHYLVsJ3d4EoBwkXD3N58_e9_b3tGNkVmhGRyWoW7.Yeo7VUhW1ZzDuRx7Rs0UwyFrPxdHabTCF5TqaLdJI_zF7uR0n6CvPHBXDuAxe9riqxrKGkDHJNsF61N_66lQSyWirgHR4FGeYw9_9uShBug.e7pwnmsa9JleEniyPuseLgCJo7WVOeKqmRxUupa3RCka.s2FCzPub63VekyZTypBpZVB_0dfJG6gafiurwUBgI7od94fddBcPhT1c6W9Hxe1EQ8oEbCAaCD.bedToi.D8e1ZhrbGqUsJUWDWxQ09H4zGl45iQucaptq3EujS2URhffmuYvvQsO_.dvzBHUqBcCAAA-");
+        url.searchParams.set("basemap", "dark");
     } 
     else if (region === 'westSouthSea') {
-        const baseLayers = "H4sIAMHdP2oAA6WSX0.CMBTFv0ufx_i.sXZviAokKMT5Qoxp6lZgSUdJN0AkfHe7ER2JkxdeT3vPufd379sRmHKl7MAYmxYgOp48YDYyycoDiKDPPKDlQdlxCiIwnEzv_hPRf_5P5vE4fpy_PAz68auYjeYCQiQgpt0kV3khcpOKpTZiszp0nHspjZDrRSKgDxlJ1VLM0H0nF9hVwF73.AN44Gu8TtUniBj0QFYlCg2drM0yTqRWIFpIXSgnZMtVObRmu6n7_q1PjDY2l2fVymz9YfZO3km9VU.ZGkTIhxwFIUSEcYJwSOnPq3SxGPnEPRPMeMgpx.jkXaeDg9vxJFt7jU2hpNjLUlmxU9rUwQ0n3nDCbZyK8qDVTNoyS7Ry7Zd2_5dea0JdGRtduddmrShunb24ehbF5UmEzaiobdRmx5j7mGEeIBJQziANL1dMqN8jLCA0oAHjrNr.P0eTFaMsTZUzrKid3r8BjNPYySkDAAA-";
-        const objv2 = "H4sIAMHdP2oAA1VQ3WqDMBR_l1xtYCWJ8Se9G4yNQqFluyxSsvZoA5q4GGUyfPed6BhrbkLO93ty_ib6SrbkbCmJSAXKDw56ssW5nzpA5GWdIVqDbcG7iWz.wKPVxiN0sdZdtVF_0TIu4jQRGc2iRMS0yBOalHNEOmc7cF4H0l2uUW1wOz_ReS4xyKnutnDONQtXq7q9msDtFkkTJAvnvYPLMhsfbo847IePHvyzbt.g8zCCc.q6ZkEDo.LamvBwytQYd9owSqMNjYUUlAdamvBwytQYd9owSqMNjYUUl";
-        
-        newUrl = "https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=" + timestamp + "&z=" + depth + "&center=122.78211050504403%2C33.858696115669225&zoom=13.75413737458402&layers=" + baseLayers + "&basemap=bathymetry&objv2=" + objv2;
+        url.searchParams.set("center", "122.78211050504403,33.858696115669225");
+        url.searchParams.set("zoom", "13.75413737458402");
+        url.searchParams.set("layers", "H4sIAHbdP2oAA6WSX0.CMBTFv0ufx_i.sXZviAokKMT5Qoxp6lZgSUdJN0AkfHe7ER2JkxdeT3vPufd379sRmHKl7MAYmxYgOp48YDYyycoDiKDPPKDlQdlxCiIwnEzv_hPRf_5P5vE4fpy_PAz68auYjeYCQiQgpt0kV3khcpOKpTZiszp0nHspjZDrRSKgDxlJ1VLM0H0nF9hVwF73.AN44Gu8TtUniBj0QFYlCg2drM0yTqRWIFpIXSgnZMtVObRmu6n7_q1PjDY2l2fVymz9YfZO3km9VU.ZGkTIhxwFIUSEcYJwSOnPq3SxGPnEPRPMeMgpx.jkXaeDg9vxJFt7jU2hpNjLUlmxU9rUwQ0n3nDCbZyK8qDVTNoyS7Ry7Zd2_5dea0JdGRtduddmrShunb24ehbF5UmEzaiobdRmx5j7mGEeIBJQziANL1dMqN8jLCA0oAHjrNr.P0eTFaMsTZUzrKid3r8BjNPYySkDAAA-");
+        url.searchParams.set("basemap", "bathymetry");
+        url.searchParams.set("objv2", "H4sIAHbdP2oAA1VQ3WqDMBR_l1xtYCWJ8Se9G4yNQqFluyxSsvZoA5q4GGUyfPed6BhrbkLO93ty_ib6SrbkbCmJSAXKDw56ssW5nzpA5GWdIVqDbcG7iWz.wKPVxiN0sdZdtVF_0TIu4jQRGc2iRMS0yBOalHNEOmc7cF4H0l2uUW1wOz_ReS4xyKnutnDONQtXq7q9msDtFkkTJAvnvYPLMhsfbo847IePHvyzbt.g8zCCc.q6ZkEDo.LamvBwytQYd9owSqMNjYUUlAdamvBwytQYd9owSqMNjYUUl");
     }
     
-    window.open(newUrl, '_blank');
+    // 완성된 URL로 새창 열기
+    window.open(url.toString(), '_blank');
 }
 </script>
 
