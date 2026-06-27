@@ -36,7 +36,7 @@
             text-align: left;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             width: 100%;
-            box-sizing: border-box; /* 오타 수정: 블록 크기 계산 정상화 */
+            box-sizing: border-box;
             max-width: 500px;
         }
         .form-group {
@@ -60,25 +60,17 @@
             outline: none;
             border-color: #38bdf8;
         }
-        .btn-submit {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #38bdf8;
-            color: #0f172a;
-            border: none;
-            border-radius: 6px;
-            font-size: 1.1rem;
+        
+        /* 섹션 구분 스타일 */
+        .section-title {
+            margin-top: 50px;
+            margin-bottom: 15px;
+            font-size: 1.25rem;
+            color: #cbd5e1;
             font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 20px;
-        }
-        .btn-submit:hover {
-            background-color: #7dd3fc;
         }
 
-        /* [추가 및 복구] 지도 이미지 스타일 선언부 */
+        /* 지도 이미지 링크 상자 스타일 */
         .map-link-container {
             display: inline-block;
             position: relative;
@@ -87,7 +79,7 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            margin-top: 20px;
+            margin-bottom: 20px;
             max-width: 100%;
         }
         .map-link-container:hover {
@@ -117,46 +109,45 @@
 <body>
 
 <div class="container">
-    <h1>Navy Expert for Oceanography (NEO)</h1>
-    <p>여름철 동해의 수온전선, 한류와 난류 분포를 관찰해봅시다. 수심과 날짜를 입력한 후 버튼을 누르거나, 아래 지도를 클릭하면 해당 뷰어로 연결됩니다.(제작 : 길범준 / 출처 : Copernicus Marine MyOcean Viewer)
-</p>
+    <h1>Copernicus Marine Expert Viewer</h1>
+    <p>아래에서 수심과 날짜를 지정한 후, 원하는 해역의 지도를 클릭하면 해당 조건으로 뷰어가 열립니다.</p>
 
+    <!-- 제어 패널 (수심 및 날짜 공통 지정창) -->
     <div class="control-panel">
         <div class="form-group">
             <label for="depthInput">수심 입력 (m):</label>
-            <input type="number" id="depthInput" value="-100" style="width: 100px;">
+            <input type="number" id="depthInput" value="-200" style="width: 100px;">
         </div>
         
         <div class="form-group">
             <label for="dateInput">날짜 입력:</label>
-            <input type="date" id="dateInput" value="2025-07-05">
+            <input type="date" id="dateInput" value="2026-05-18">
         </div>
-
-        <div class="form-group" style="margin-top: 20px; border-top: 1px solid #334155; padding-top: 15px;">
-            <label for="layerInput" style="width: 100%; margin-bottom: 5px; color: #94a3b8; font-size: 0.85rem;">
-                💡 레이어가 안 뜰 때만: CMEMS 주소의 'layers=' 뒷부분 붙여넣기
-            </label>
-            <input type="text" id="layerInput" value="H4sIAMe1PGoAA6WQT0.CQBDFv8ueK2y3FEpvFRVJUIj1QoyZrNuhNNl2yHYLVsJ3d4EoBwkXD3N58_e9_b3tGNkVmhGRyWoW7.Yeo7VUhW1ZzDuRx7Rs0UwyFrPxdHabTCF5TqaLdJI_zF7uR0n6CvPHBXDuAxe9riqxrKGkDHJNsF61N_66lQSyWirgHR4FGeYw9_9uShBug.e7pwnmsa9JleEniyPuseLgCJo7WVOeKqmRxUupa3RCka.s2FCzPub63VekyZTypBpZVB_0dfJG6gafiurwUBgI7od94fddBcPhT1c6W9Hxe1EQ8oEbCAaCD.bedToi.D8e1ZhrbGqUsJUWDWxQ09H4zGl45iQucaptq3EujS2URhffmuYvvQsO_.dvzBHUqBcCAAA-" style="width: 95%; font-size: 0.8rem; color: #64748b;">
-        </div>
-        
-        <button class="btn-submit" onclick="openViewer()">입력한 조건으로 뷰어 열기 (새 창)</button>
     </div>
 
-    <br>
-
-    <div class="map-link-container" onclick="openViewer()">
-        <img src="screen.png" alt="Copernicus Map Screenshot" class="map-screenshot">
+    <!-- 1지역: 동해 일대 관찰 (첫 번째 그림) -->
+    <div class="section-title">📍 동해 및 주변 해역의 해수 특성 관찰</div>
+    <div class="map-link-container" onclick="openViewer('eastSea')">
+        <img src="screen.png" alt="East Sea Map" class="map-screenshot">
         <div class="hover-overlay">
-            🔍 클릭하여 입력한 조건의 지도로 이동하기
+            🔍 클릭하여 지정한 조건의 동해 지도로 이동하기
+        </div>
+    </div>
+
+    <!-- 2지역: 서·남해 일대 관찰 (두 번째 그림 추가) -->
+    <div class="section-title" style="color: #38bdf8;">📍 다음은 서.남해 일대의 수온과 해류 구조를 관찰해봅시다.</div>
+    <div class="map-link-container" onclick="openViewer('westSouthSea')">
+        <img src="screen.jpg" alt="West/South Sea Map" class="map-screenshot">
+        <div class="hover-overlay">
+            🔍 클릭하여 지정한 조건의 서·남해 지도로 이동하기
         </div>
     </div>
 </div>
 
 <script>
-function openViewer() {
+function openViewer(region) {
     const depthEl = document.getElementById('depthInput');
     const dateEl = document.getElementById('dateInput');
-    const layerEl = document.getElementById('layerInput');
     
     let depth = depthEl.value.trim();
     if (depth === "") depth = "0";
@@ -167,7 +158,7 @@ function openViewer() {
         return;
     }
     
-    // [보완] 크롬 및 타 브라우저 시차 오류 원천 차단 (낮 12시 기준 타임스탬프 발행)
+    // 타임존 밀림 방지 타임스탬프 계산
     const safeDateStr = `${dateVal}T12:00:00`;
     const timestamp = new Date(safeDateStr).getTime();
     
@@ -176,10 +167,21 @@ function openViewer() {
         return;
     }
     
-    const baseLayers = layerEl.value.trim();
+    let newUrl = "";
+
+    // 클릭한 지도(지역)에 따라 다른 고유 베이스 주소와 레이어 값을 바인딩
+    if (region === 'eastSea') {
+        const baseLayers = "H4sIAMe1PGoAA6WQT0.CQBDFv8ueK2y3FEpvFRVJUIj1QoyZrNuhNNl2yHYLVsJ3d4EoBwkXD3N58_e9_b3tGNkVmhGRyWoW7.Yeo7VUhW1ZzDuRx7Rs0UwyFrPxdHabTCF5TqaLdJI_zF7uR0n6CvPHBXDuAxe9riqxrKGkDHJNsF61N_66lQSyWirgHR4FGeYw9_9uShBug.e7pwnmsa9JleEniyPuseLgCJo7WVOeKqmRxUupa3RCka.s2FCzPub63VekyZTypBpZVB_0dfJG6gafiurwUBgI7od94fddBcPhT1c6W9Hxe1EQ8oEbCAaCD.bedToi.D8e1ZhrbGqUsJUWDWxQ09H4zGl45iQucaptq3EujS2URhffmuYvvQsO_.dvzBHUqBcCAAA-";
+        newUrl = `https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=${timestamp}&z=${depth}&center=130.16038204953057%2C39.0627401581225&zoom=14.583824767779062&layers=${baseLayers}&basemap=dark`;
+    } 
+    else if (region === 'westSouthSea') {
+        const baseLayers = "H4sIAMHdP2oAA6WSX0.CMBTFv0ufx_i.sXZviAokKMT5Qoxp6lZgSUdJN0AkfHe7ER2JkxdeT3vPufd379sRmHKl7MAYmxYgOp48YDYyycoDiKDPPKDlQdlxCiIwnEzv_hPRf_5P5vE4fpy_PAz68auYjeYCQiQgpt0kV3khcpOKpTZiszp0nHspjZDrRSKgDxlJ1VLM0H0nF9hVwF73.AN44Gu8TtUniBj0QFYlCg2drM0yTqRWIFpIXSgnZMtVObRmu6n7_q1PjDY2l2fVymz9YfZO3km9VU.ZGkTIhxwFIUSEcYJwSOnPq3SxGPnEPRPMeMgpx.jkXaeDg9vxJFt7jU2hpNjLUlmxU9rUwQ0n3nDCbZyK8qDVTNoyS7Ry7Zd2_5dea0JdGRtduddmrShunb24ehbF5UmEzaiobdRmx5j7mGEeIBJQziANL1dMqN8jLCA0oAHjrNr.P0eTFaMsTZUzrKid3r8BjNPYySkDAAA-";
+        const objv2 = "H4sIAMHdP2oAA1VQ3WqDMBR_l1xtYCWJ8Se9G4yNQqFluyxSsvZoA5q4GGUyfPed6BhrbkLO93ty_ib6SrbkbCmJSAXKDw56ssW5nzpA5GWdIVqDbcG7iWz.wKPVxiN0sdZdtVF_0TIu4jQRGc2iRMS0yBOalHNEOmc7cF4H0l2uUW1wOz_ReS4xyKnutnDONQtXq7q9msDtFkkTJAvnvYPLMhsfbo847IePHvyzbt.g8zCCc.q6ZkEDo.LamvBwytQYd9owSqMNjYUUlAdamvBwytQYd9owSqMNjYUUl";
+        
+        newUrl = `https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=${timestamp}&z=${depth}&center=122.78211050504403%2C33.858696115669225&zoom=13.75413737458402&layers=${baseLayers}&basemap=bathymetry&objv2=${objv2}`;
+    }
     
-    const newUrl = `https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=${timestamp}&z=${depth}&center=130.16038204953057%2C39.0627401581225&zoom=14.583824767779062&layers=${baseLayers}&basemap=dark`;
-    
+    // 지정한 조건의 주소로 안전하게 새 창 열기
     window.open(newUrl, '_blank');
 }
 </script>
